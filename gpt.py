@@ -1,21 +1,30 @@
+# import pytorch
 import torch
+
+
+# import nn module and grab F function
 import torch.nn as nn
 from torch.nn import functional as F
-# C: Manual seed to establish control values
+
+
+# Manual seed to establish control values
 torch.manual_seed(1337)
 
 
-# read it in to inspect it
+# read in data
 with open('input.txt', 'r', encoding='utf-8') as f:
     text = f.read()
 
+
+# print debug length of dataset
 # print("length of dataset in characters: ", len(text))
 
 
-# here are all the unique characters that occur in this text
+# set list of unique characters into sorted list
 chars = sorted(list(set(text)))
 vocab_size = len(chars)
 
+# print debug chars and vocab size
 # print(''.join(chars))
 # print(vocab_size)
 
@@ -25,38 +34,42 @@ vocab_size = len(chars)
 stoi = {ch: i for i, ch in enumerate(chars)}
 itos = {i: ch for i, ch in enumerate(chars)}
 
+
 # encoder: take a string, output a list of integers
-
-
 def encode(s): return [stoi[c] for c in s]
 
+
 # decoder: take a list of integers, output a string
-
-
 def decode(l): return ''.join([itos[i] for i in l])
 
+
+# print debug and display features of encode vs decode
 # print(encode("hii there"))
 # print(decode(encode("hii there")))
 
 
-# let's now encode the entire text dataset and store it into a torch.Tensor
+# store data as encoded tensor
 data = torch.tensor(encode(text), dtype=torch.long)
+
+
 # print(data.shape, data.dtype)
 # the 1000 characters we looked at earier will to the GPT look like this
 # print(data[:1000])
+
 
 # Let's now split up the data into train and validation sets
 n = int(0.9*len(data))  # first 90% will be train, rest val
 train_data = data[:n]
 val_data = data[n:]
 
-# C: Block size initalization
-# C: Use blocks to provide context for training
+
+# Block size initalization
+# Use blocks to provide context for training
 block_size = 8
 train_data[:block_size+1]
 
 
-# C: Context vs Target Explained
+# Context vs Target Explained
 # x = train_data[:block_size]
 # y = train_data[1:block_size+1]
 # for t in range(block_size):
